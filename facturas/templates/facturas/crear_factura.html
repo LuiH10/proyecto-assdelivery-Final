@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Nueva Factura</title>
+  <style>
+    body { font-family: Arial; background:#f8f8f8; padding:20px; }
+    form { background:#fff; padding:20px; border-radius:8px; max-width:520px; }
+    label { display:block; margin:12px 0 6px; font-weight:bold; }
+    input, select { width:100%; padding:10px; }
+    .fila { margin-top:14px; display:flex; gap:10px; }
+    .btn { background:#4CAF50; color:#fff; padding:10px 14px; border:none; border-radius:6px; cursor:pointer; }
+    .link { margin-left:8px; }
+  </style>
+</head>
+<body>
+  <h1>Crear factura</h1>
+
+  <form method="post">
+    {% csrf_token %}
+    <label>{{ form.cliente.label }}</label>
+    {{ form.cliente }}
+
+    <label>{{ form.total.label }}</label>
+    {{ form.total }}
+
+    <label>{{ form.estado.label }}</label>
+    {{ form.estado }}
+
+    <div class="fila">
+      <button type="submit" class="btn">Guardar</button>
+      <a href="{% url 'lista_facturas' %}" class="link">← Volver</a>
+    </div>
+  </form>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ASS Delivery{% endblock %}</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", sans-serif;
+            background: #f4f6f9;
+            display: flex;
+        }
+
+        /* ─────────── SIDEBAR ─────────── */
+        .sidebar {
+            width: 230px;
+            height: 100vh;
+            position: fixed;
+            background: #0e2033;
+            padding: 30px 20px;
+            box-sizing: border-box;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-align: left;
+            margin-bottom: 40px;
+        }
+
+        .menu a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 8px;
+            font-size: 17px;
+            border-radius: 6px;
+            transition: 0.2s;
+            margin-bottom: 8px;
+        }
+
+        .menu a:hover {
+            background: #16314d;
+        }
+
+        /* Botón de cerrar sesión */
+        .logout-container {
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .logout-btn {
+            width: 100%;
+            background: #b43131;
+            padding: 12px 10px;
+            border-radius: 8px;
+            text-align: center;
+            color: white;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.2s;
+            display: block;
+        }
+
+        .logout-btn:hover {
+            background: #8e2424;
+        }
+
+        /* ─────────── CONTENIDO ─────────── */
+        .content {
+            margin-left: 230px;
+            width: calc(100% - 230px);
+            padding: 30px;
+            box-sizing: border-box;
+            min-height: 100vh;
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+    <!-- ───────────────────────────────────────────── -->
+    <!--                 BARRA LATERAL                 -->
+    <!-- ───────────────────────────────────────────── -->
+    <div class="sidebar">
+
+        <div>
+            <div class="logo">ASSDELIVERY</div>
+
+            <div class="menu">
+                <a href="/inicio/">🏠 Inicio</a>
+                <a href="/clientes/">👥 Clientes</a>
+                <a href="/consultorias/">💼 Consultorías</a>
+                <a href="/facturas/">💰 Facturas</a>
+                <a href="/reportes/">📊 Reportes</a>
+                <a href="/configuracion/">⚙️ Configuración</a>
+            </div>
+        </div>
+
+        <div class="logout-container">
+            <a href="/logout/" class="logout-btn">🚪 Cerrar sesión</a>
+        </div>
+
+    </div>
+
+    <!-- CONTENIDO CENTRAL -->
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+
+</body>
+</html>

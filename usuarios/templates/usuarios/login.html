@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASS Delivery | Iniciar Sesión</title>
+    <style>
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background: linear-gradient(135deg, #0e2033 0%, #1c3b5a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            color: #fff;
+        }
+
+        .login-container {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border-radius: 15px;
+            padding: 40px;
+            width: 350px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        .login-container h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+
+        .login-container input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.9);
+            font-size: 15px;
+            transition: 0.3s;
+        }
+
+        .login-container input:focus {
+            outline: none;
+            box-shadow: 0 0 8px #4a90e2;
+        }
+
+        .login-container button {
+            width: 100%;
+            background-color: #4a90e2;
+            color: #fff;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .login-container button:hover {
+            background-color: #357abd;
+        }
+
+        .message {
+            margin-top: 15px;
+            color: #ffb3b3;
+            font-size: 14px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo {
+            width: 90px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <img src="/static/img/logo.png" alt="ASS Delivery Logo" class="logo">
+        <h2>Bienvenido a ASS Delivery</h2>
+
+        <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+            <input type="text" name="identificador" placeholder="Usuario o correo electrónico" required>
+            <input type="password" name="password" placeholder="Contraseña" required>
+            <button type="submit">Iniciar sesión</button>
+
+            <p style="margin-top:10px;">
+    <a href="#" id="abrirRecuperar" style="color:#d6e4ff;">¿Olvidaste tu contraseña?</a>
+</p>
+
+<p style="margin-top:5px;">
+    <a href="/usuarios/registro/" style="color:#d6e4ff;">¿No tienes una cuenta? Regístrate</a>
+
+</p>
+
+
+        </form>
+
+        {% if messages %}
+        <div class="message">
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+<!-- 🌟 Modal Recuperar Contraseña -->
+<div id="modalRecuperar" class="modal">
+    <div class="modal-contenido">
+        <span class="cerrar" id="cerrarRecuperar">&times;</span>
+        <h2>Recuperar contraseña</h2>
+
+        <p style="color:#333; margin-bottom:10px;">
+            Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.
+        </p>
+
+        <form method="POST" action="{% url 'recuperar_contrasena' %}">
+
+            {% csrf_token %}
+            <input type="email" name="correo" placeholder="Correo registrado" required>
+
+            <button type="submit">Enviar enlace</button>
+        </form>
+    </div>
+</div>
+
+<style>
+.modal {
+  display:none; position:fixed; z-index:10;
+  top:0; left:0; width:100%; height:100%;
+  background:rgba(0,0,0,0.45);
+  justify-content:center; align-items:center;
+}
+.modal-contenido {
+  background:white;
+  border-radius:12px;
+  padding:25px;
+  width:330px;
+  max-width:90%;
+  color:#222;
+  position:relative;
+  animation:popIn .25s ease;
+}
+.cerrar {
+  position:absolute;
+  top:8px; right:12px;
+  cursor:pointer; font-size:22px;
+}
+.modal-contenido input {
+  width:100%; padding:10px; margin-top:10px;
+  border-radius:6px; border:1px solid #ccc;
+}
+.modal-contenido button {
+  margin-top:15px;
+  width:100%;
+  padding:10px;
+  background:#0e2033;
+  color:white;
+  border:none;
+  border-radius:6px;
+}
+@keyframes popIn {
+  from { transform:scale(.9); opacity:0; }
+  to   { transform:scale(1); opacity:1; }
+}
+</style>
+
+<script>
+const modalR = document.getElementById("modalRecuperar");
+document.getElementById("abrirRecuperar").onclick = () => modalR.style.display = "flex";
+document.getElementById("cerrarRecuperar").onclick = () => modalR.style.display = "none";
+window.onclick = e => { if (e.target === modalR) modalR.style.display = "none"; };
+</script>
+
+
+</body>
+</html>
+
+
+

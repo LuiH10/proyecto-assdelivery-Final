@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block title %}Panel de Administración{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h1>📊 Panel de Administración</h1>
+    <p>Bienvenido al sistema AssDelivery. Aquí tienes una vista general de tu negocio.</p>
+
+    <div class="cards">
+        <div class="card clientes">
+            <h3>👥 Clientes registrados</h3>
+            <p class="numero">{{ clientes }}</p>
+        </div>
+
+        <div class="card consultorias">
+            <h3>💼 Consultorías este mes</h3>
+            <p class="numero">{{ consultorias }}</p>
+        </div>
+
+        <div class="card facturas">
+            <h3>💰 Facturas emitidas</h3>
+            <p class="numero">{{ facturas_emitidas }}</p>
+        </div>
+
+        <div class="card pendientes">
+            <h3>⏳ Facturas pendientes</h3>
+            <p class="numero">{{ facturas_pendientes }}</p>
+        </div>
+    </div>
+</div>
+
+<style>
+.dashboard-container {
+    color: #0e2033;
+    font-family: 'Segoe UI', sans-serif;
+    padding: 30px;
+}
+
+.dashboard-container h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.dashboard-container p {
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.card h3 {
+    font-weight: 600;
+    color: #0e2033;
+}
+
+.card .numero {
+    font-size: 2.5rem;
+    margin-top: 10px;
+    color: #fff;
+    background: #0e2033;
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: bold;
+}
+
+/* Colores personalizados */
+.card.clientes .numero { background: #007bff; }
+.card.consultorias .numero { background: #17a2b8; }
+.card.facturas .numero { background: #28a745; }
+.card.pendientes .numero { background: #ffc107; color: #222; }
+</style>
+{% endblock %}
+

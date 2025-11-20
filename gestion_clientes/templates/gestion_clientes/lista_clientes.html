@@ -1,0 +1,383 @@
+// {% extends 'base.html' %}
+{% block title %}Gestión de Clientes{% endblock %}
+
+{% block content %}
+<h1>👥 Gestión de Clientes</h1>
+
+<!-- 🔍 Buscador -->
+<div style="display:flex; gap:10px; align-items:center; margin-bottom:15px;">
+  <input type="text" id="buscador" placeholder="Buscar por nombre, correo o ID..." 
+         style="padding:8px; border-radius:6px; border:1px solid #ccc; flex:1;">
+  <button class="btn-crear" id="abrirModal">➕ Añadir Cliente</button>
+</div>
+
+{% if messages %}
+  <div style="margin-top:10px;">
+    {% for message in messages %}
+      <p style="color:{% if message.tags == 'error' %}#b91d1d{% else %}#0e8f2f{% endif %}; font-weight:600;">
+        {{ message }}
+      </p>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<!-- 📋 Tabla -->
+<div class="tabla-contenedor">
+<table class="tabla">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Asignado</th>
+      <th>Nombre</th>
+      <th>Empresa</th>
+      <th>Correo</th>
+      <th>Teléfono</th>
+      <th>Estado</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for cliente in clientes %}
+    <tr>
+      <td>{{ cliente.id }}</td>
+      <td class="col-asignado">
+        {% if cliente.asignado %}{{ cliente.asignado.username }}{% else %}—{% endif %}
+      </td>
+      <td class="col-nombre">{{ cliente.nombre }}</td>
+      <td class="col-empresa">{{ cliente.empresa }}</td>
+      <td class="col-correo">{{ cliente.correo }}</td>
+      <td class="col-telefono">{{ cliente.telefono }}</td>
+      <td>{{ cliente.estado }}</td>
+
+      <td>
+       <a href="#" class="btn-editar"
+   onclick="abrirModalEditar({{ cliente.id }}, '{{ cliente.nombre }}', '{{ cliente.empresa }}',
+   '{{ cliente.correo }}', '{{ cliente.telefono }}', '{{ cliente.estado }}',
+   {% if cliente.asignado %}{{ cliente.asignado.id }}{% else %}null{% endif %}
+   )">✏️</a>
+
+<a href="{% url 'eliminar_cliente' cliente.id %}" class="btn-eliminar"
+   onclick="return confirm('¿Eliminar este cliente?')">🗑️</a>
+
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="8" style="text-align:center;">No hay clientes registrados.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<!-- 🌟 MODAL -->
+<div id="modal" class="modal">
+  <div class="modal-contenido">
+    <span class="cerrar" id="cerrarModal">&times;</span>
+    <h2 style="margin-bottom:15px;">➕ Añadir Cliente</h2>
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <label>Nombre:</label>
+      <input type="text" name="nombre" maxlength="40" required>
+
+      <label>Empresa:</label>
+      <input type="text" name="empresa" maxlength="40">
+
+      <label>Correo:</label>
+      <input type="email" name="correo" maxlength="60" required>
+
+      <label>Teléfono:</label>
+      <input type="text" name="telefono" maxlength="15">
+
+      <label>Asignado a:</label>
+      <select name="asignado">
+        <option value="">-- Sin asignar --</option>
+        {% for c in consultores %}
+        <option value="{{ c.id }}">{{ c.username }}</option>
+        {% endfor %}
+      </select>
+
+      <label>Estado:</label>
+      <select name="estado" required>
+        <option value="activo">Activo</option>
+        <option value="inactivo">Inactivo</option>
+        <option value="pendiente">Pendiente</option>
+      </select>
+
+      <button type="submit" class="btn-azul">💾 Guardar</button>
+      <button type="button" id="cancelarModal" class="btn-cancelar">✖ Cancelar</button>
+    </form>
+  </div>
+</div>
+
+<!-- 🌟 MODAL EDITAR CLIENTE -->
+<div id="modalEditar" class="modal">
+  <div class="modal-contenido">
+    
+    <span class="cerrar" onclick="cerrarModalEditar()">&times;</span>
+    <h2 style="margin-bottom:15px;">✏️ Editar Cliente</h2>
+
+    <form method="POST" action="{% url 'editar_cliente' 0 %}" id="formEditar">
+      {% csrf_token %}
+
+      <label>Nombre:</label>
+      <input type="text" name="nombre" id="edit_nombre" required>
+
+      <label>Empresa:</label>
+      <input type="text" name="empresa" id="edit_empresa">
+
+      <label>Correo:</label>
+      <input type="email" name="correo" id="edit_correo" required>
+
+      <label>Teléfono:</label>
+      <input type="text" name="telefono" id="edit_telefono">
+
+      <label>Asignado a:</label>
+      <select name="asignado" id="edit_asignado">
+        <option value="">-- Sin asignar --</option>
+        {% for c in consultores %}
+          <option value="{{ c.id }}">{{ c.username }}</option>
+        {% endfor %}
+      </select>
+
+      <label>Estado:</label>
+      <select name="estado" id="edit_estado">
+        <option value="activo">Activo</option>
+        <option value="inactivo">Inactivo</option>
+        <option value="pendiente">Pendiente</option>
+      </select>
+
+      <button type="submit" class="btn-azul">💾 Guardar Cambios</button>
+      <button type="button" class="btn-cancelar" onclick="cerrarModalEditar()">✖ Cancelar</button>
+    </form>
+
+  </div>
+</div>
+
+<script>
+function abrirModalEditar(id, nombre, empresa, correo, telefono, estado, asignado) {
+    const modal = document.getElementById("modalEditar");
+
+    // Rellenar inputs
+    document.getElementById("edit_nombre").value = nombre;
+    document.getElementById("edit_empresa").value = empresa;
+    document.getElementById("edit_correo").value = correo;
+    document.getElementById("edit_telefono").value = telefono;
+    document.getElementById("edit_estado").value = estado;
+
+    // Asignado
+    document.getElementById("edit_asignado").value = asignado ?? "";
+
+    // Cambiar acción del formulario
+    document.getElementById("formEditar").action = "/clientes/editar/" + id + "/";
+
+    modal.style.display = "flex";
+}
+
+function cerrarModalEditar() {
+    document.getElementById("modalEditar").style.display = "none";
+}
+
+window.onclick = function(e) {
+    if (e.target === document.getElementById("modalEditar")) {
+        cerrarModalEditar();
+    }
+};
+</script>
+
+
+<!-- JS -->
+<script>
+const modal = document.getElementById('modal');
+document.getElementById('abrirModal').onclick = () => modal.style.display = 'flex';
+document.getElementById('cerrarModal').onclick = () => modal.style.display = 'none';
+document.getElementById('cancelarModal').onclick = () => modal.style.display = 'none';
+window.onclick = e => { if (e.target === modal) modal.style.display = 'none'; };
+
+// Buscador en tiempo real
+document.getElementById('buscador').addEventListener('input', function() {
+  const busqueda = this.value.toLowerCase();
+  const filas = document.querySelectorAll('.tabla tbody tr');
+  
+  filas.forEach(fila => {
+    const texto = fila.textContent.toLowerCase();
+    fila.style.display = texto.includes(busqueda) ? '' : 'none';
+  });
+});
+</script>
+
+<style>
+/* 🎨 Título y botón */
+h1 {
+  color: #0e2033;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.btn-crear {
+  background: #0e2033;
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s;
+}
+.btn-crear:hover { background: #16314d; }
+
+/* 📋 Contenedor y tabla */
+.tabla-contenedor {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  overflow-x: auto;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+.tabla th {
+  background-color: #0e2033;
+  color: white;
+  padding: 12px 8px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.tabla td {
+  padding: 10px 8px;
+  border-bottom: 1px solid #ddd;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tabla tr:hover { background: #f5f6f7; }
+
+/* Columnas específicas */
+.col-asignado { max-width: 100px; }
+.col-nombre { max-width: 150px; }
+.col-empresa { max-width: 140px; }
+.col-correo { max-width: 180px; }
+.col-telefono { max-width: 120px; }
+
+/* Select de estado */
+.select-estado {
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+/* Botón eliminar */
+.btn-eliminar {
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 5px;
+  background: #b91d1d;
+  color: white;
+  font-size: 14px;
+}
+.btn-eliminar:hover { background: #8e1414; }
+
+/* 🌟 MODAL */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.45);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-contenido {
+  background: white;
+  border-radius: 10px;
+  padding: 25px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  position: relative;
+  animation: popIn 0.25s ease;
+}
+
+.cerrar {
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  font-size: 22px;
+  cursor: pointer;
+  color: #444;
+}
+.cerrar:hover { color: #0e2033; }
+
+label {
+  display: block;
+  margin-top: 12px;
+  font-weight: bold;
+  color: #333;
+}
+
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 4px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  font-size: 15px;
+}
+
+.btn-azul {
+  background: #0e2033;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px;
+  margin-top: 15px;
+  width: 100%;
+  cursor: pointer;
+  font-weight: 600;
+}
+.btn-azul:hover { background: #16314d; }
+
+.btn-cancelar {
+  background: #ccc;
+  border: none;
+  border-radius: 6px;
+  padding: 10px;
+  width: 100%;
+  margin-top: 8px;
+  cursor: pointer;
+}
+.btn-cancelar:hover { background: #bbb; }
+
+@keyframes popIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.btn-editar {
+  background:#0078d7;
+  padding:6px 10px;
+  border-radius:5px;
+  color:white;
+  text-decoration:none;
+}
+.btn-editar:hover { background:#005fa3; }
+
+
+
+</style>
+
+{% endblock %}

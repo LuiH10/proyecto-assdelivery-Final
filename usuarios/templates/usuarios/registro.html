@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Registro</title>
+<style>
+body {
+    background: #0e2033;
+    font-family: Arial, sans-serif;
+    color: white;
+    display:flex; justify-content:center; align-items:center;
+    height:100vh; margin:0;
+}
+.card {
+    background: rgba(255,255,255,0.1);
+    padding:25px; border-radius:12px;
+    width:320px; text-align:center;
+}
+input {
+    width:100%; padding:10px; margin-top:10px;
+    border-radius:6px; border:none; font-size:14px;
+}
+button {
+    width:100%; padding:10px; margin-top:15px;
+    background:#4a90e2; border:none; color:white;
+    border-radius:6px; font-size:15px;
+}
+a { color:#a4c8ff; font-size:14px; }
+</style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Crear Cuenta</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="username" placeholder="Nombre de usuario" required>
+        <input type="email" name="email" placeholder="Correo electrónico" required>
+        <input type="password" name="password" placeholder="Contraseña" required>
+        <button type="submit">Registrar</button>
+    </form>
+
+    {% if messages %}
+      {% for message in messages %}
+        <p style="color:#ffb3b3;">{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+
+    <p><a href="/">Volver al inicio</a></p>
+</div>
+
+</body>
+</html>
+

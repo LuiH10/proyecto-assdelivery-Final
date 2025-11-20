@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<style>
+
+body {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  margin: 40px;
+  color: #222;
+}
+
+/* ENCABEZADO */
+.encabezado {
+  width: 100%;
+  margin-bottom: 25px;
+  border-bottom: 2px solid #0e2033;
+  padding-bottom: 10px;
+}
+
+.titulo {
+  font-size: 22px;
+  font-weight: bold;
+  color: #0e2033;
+}
+
+.subtitulo {
+  font-size: 14px;
+  color: #444;
+  margin-top: -5px;
+}
+
+/* INFO PRINCIPAL */
+.info-box {
+  border: 1px solid #999;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+.info-line strong {
+  color: #0e2033;
+}
+
+/* DESCRIPCIÓN */
+.descripcion-box {
+  margin-top: 20px;
+  border: 1px solid #ccc;
+  padding: 12px;
+  min-height: 120px;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+.label {
+  font-size: 15px;
+  font-weight: bold;
+  margin-bottom: 6px;
+  color: #0e2033;
+}
+
+/* PIE DE FIRMA */
+.firma-box {
+  margin-top: 60px;
+  text-align: center;
+}
+
+.firma-linea {
+  width: 260px;
+  border-top: 1px solid #000;
+  margin: 0 auto;
+  margin-top: 45px;
+}
+
+
+body {
+    font-family: Arial, sans-serif;
+}
+
+/* 🔥 Esto fuerza saltos de línea aunque no haya espacios */
+.descripcion {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+
+
+</style>
+</head>
+
+<body>
+
+<!-- ENCABEZADO -->
+<div class="encabezado">
+  <div class="titulo">📄 Reporte del Sistema</div>
+  <div class="subtitulo">Informe generado automáticamente por AssDelivery</div>
+</div>
+
+<!-- INFORMACIÓN PRINCIPAL -->
+<div class="info-box">
+  <div class="info-line"><strong>ID Reporte:</strong> {{ reporte.id }}</div>
+  <div class="info-line"><strong>Consultor:</strong> {{ reporte.consultor.username }}</div>
+  <div class="info-line"><strong>Fecha de emisión:</strong> {{ reporte.fecha_emision }}</div>
+  <div class="info-line"><strong>Estado:</strong> {{ reporte.estado }}</div>
+</div>
+
+<!-- DESCRIPCIÓN -->
+<div class="label">Descripción del Reporte:</div>
+
+<p class="descripcion">{{ reporte.descripcion }}</p>
+
+
+<!-- FIRMA -->
+<div class="firma-box">
+  <div class="firma-linea"></div>
+  <div>FIRMA</div>
+</div>
+
+
+</body>
+</html>
+

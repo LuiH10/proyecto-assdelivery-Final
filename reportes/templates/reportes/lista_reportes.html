@@ -1,0 +1,352 @@
+{% extends 'base.html' %}
+{% block title %}Reportes del Sistema{% endblock %}
+
+{% block content %}
+
+<h1>📊 Reportes del Sistema</h1>
+
+<div style="display:flex; justify-content:flex-end; margin-bottom:15px;">
+  <button class="btn-crear" id="abrirModal">➕ Añadir Reporte</button>
+</div>
+
+<div class="tabla-contenedor">
+<table class="tabla">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Consultor</th>
+      <th>Fecha</th>
+      <th>Descripción</th>
+      <th>Estado</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for reporte in reportes %}
+    <tr>
+      <td>{{ reporte.id }}</td>
+
+      <td class="col-consultor">
+        {% if reporte.consultor %}
+            {{ reporte.consultor.username }}
+        {% else %}
+            — 
+        {% endif %}
+      </td>
+
+      <td>{{ reporte.fecha_emision }}</td>
+
+      <td class="col-descripcion">{{ reporte.descripcion }}</td>
+
+      <!-- ESTADO SOLO LECTURA -->
+      <td>{{ reporte.estado|title }}</td>
+
+      <td style="white-space:nowrap;">
+
+        <!-- ✏️ EDITAR -->
+        <a href="#" class="btn-editar"
+           onclick="abrirEditarReporte(
+              {{ reporte.id }},
+              '{{ reporte.consultor.id|default:"" }}',
+              `{{ reporte.descripcion|escapejs }}`,
+              '{{ reporte.estado }}'
+           )">✏️</a>
+
+        <!-- PDF -->
+        <a href="{% url 'reporte_pdf' reporte.id %}" class="btn-pdf">📄</a>
+
+        <!-- EXCEL -->
+        <a href="{% url 'reporte_excel' reporte.id %}" class="btn-excel">📊</a>
+
+        <!-- 🗑️ ELIMINAR -->
+        <a href="{% url 'eliminar_reporte' reporte.id %}" class="btn-eliminar"
+           onclick="return confirm('¿Eliminar este reporte?')">🗑️</a>
+
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6" style="text-align:center;">No hay reportes disponibles.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+
+
+<!-- 🌟 MODAL CREAR REPORTE -->
+<div id="modalReporte" class="modal">
+  <div class="modal-contenido modal-estilizado">
+
+    <span class="cerrar" id="cerrarModal">&times;</span>
+    <h2 class="modal-titulo">➕ Registrar Nuevo Reporte</h2>
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <label>Consultor:</label>
+      <select name="consultor" required>
+        <option value="">-- Selecciona un consultor --</option>
+        {% for u in users %}
+        <option value="{{ u.id }}">{{ u.username }} ({{ u.email }})</option>
+        {% endfor %}
+      </select>
+
+      <label>Descripción:</label>
+      <textarea name="descripcion" rows="3" required></textarea>
+
+      <label>Estado:</label>
+      <select name="estado" required>
+        <option value="pendiente">Pendiente</option>
+        <option value="en_proceso">En proceso</option>
+        <option value="completado">Completado</option>
+      </select>
+
+      <button type="submit" class="btn-azul">💾 Guardar</button>
+      <button type="button" id="cancelarModal" class="btn-cancelar">✖ Cancelar</button>
+    </form>
+
+  </div>
+</div>
+
+
+
+
+<!-- 🌟 MODAL EDITAR REPORTE -->
+<div id="modalEditarReporte" class="modal">
+  <div class="modal-contenido modal-estilizado">
+
+    <span class="cerrar" onclick="cerrarEditarReporte()">&times;</span>
+    <h2 class="modal-titulo">✏️ Editar Reporte</h2>
+
+    <form method="POST" id="formEditarReporte">
+      {% csrf_token %}
+
+      <label>Consultor:</label>
+      <select name="consultor" id="edit_consultor">
+        <option value="">— Sin asignar —</option>
+        {% for u in users %}
+        <option value="{{ u.id }}">{{ u.username }} ({{ u.email }})</option>
+        {% endfor %}
+      </select>
+
+      <label>Descripción:</label>
+      <textarea id="edit_descripcion" name="descripcion" rows="3" required></textarea>
+
+      <label>Estado:</label>
+      <select name="estado" id="edit_estado">
+        <option value="pendiente">Pendiente</option>
+        <option value="en_proceso">En proceso</option>
+        <option value="completado">Completado</option>
+      </select>
+
+      <button type="submit" class="btn-azul">💾 Guardar Cambios</button>
+      <button type="button" class="btn-cancelar" onclick="cerrarEditarReporte()">✖ Cancelar</button>
+    </form>
+
+  </div>
+</div>
+
+
+
+
+
+<!-- 🌟 JS COMPLETO -->
+<script>
+// MODAL CREAR
+const modal = document.getElementById("modalReporte");
+document.getElementById("abrirModal").onclick = () => {
+    modal.style.display = "flex";
+    document.activeElement.blur();
+};
+document.getElementById("cerrarModal").onclick = () => modal.style.display = "none";
+document.getElementById("cancelarModal").onclick = () => modal.style.display = "none";
+
+
+// MODAL EDITAR
+function abrirEditarReporte(id, consultor_id, descripcion, estado) {
+    const modalE = document.getElementById("modalEditarReporte");
+
+    document.getElementById("edit_consultor").value = consultor_id;
+    document.getElementById("edit_descripcion").value = descripcion;
+    document.getElementById("edit_estado").value = estado;
+
+    document.getElementById("formEditarReporte").action = "/reportes/editar/" + id + "/";
+
+    modalE.style.display = "flex";
+    document.activeElement.blur();
+}
+
+function cerrarEditarReporte() {
+  document.getElementById("modalEditarReporte").style.display = "none";
+}
+
+window.onclick = (e) => {
+  if (e.target === modal) modal.style.display = "none";
+  if (e.target === document.getElementById("modalEditarReporte"))
+      cerrarEditarReporte();
+};
+</script>
+
+
+
+
+<!-- 🌟 CSS COMPLETO -->
+<style>
+
+h1 {
+  color:#0e2033;
+  font-weight:700;
+  margin-bottom:20px;
+}
+
+.tabla-contenedor {
+  background:white;
+  padding:15px;
+  border-radius:8px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* TABLA */
+.tabla {
+  width:100%;
+  border-collapse:collapse;
+  text-align:center;
+}
+.tabla th {
+  background:#0e2033;
+  color:white;
+  padding:12px 8px;
+}
+.tabla td {
+  padding:10px 8px;
+  border-bottom:1px solid #ddd;
+}
+
+/* DESCRIPCIÓN CORTA */
+.col-descripcion {
+  max-width:200px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* CONSULTOR */
+.col-consultor {
+  max-width:150px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+/* BOTONES */
+.btn-crear {
+  background:#0e2033;
+  color:white;
+  padding:10px 18px;
+  border:none;
+  border-radius:8px;
+}
+.btn-editar { background:#0078d7; padding:6px 10px; border-radius:5px; color:white; }
+.btn-pdf    { background:#1a8f4c; padding:6px 10px; border-radius:5px; color:white; }
+.btn-excel  { background:#005fa3; padding:6px 10px; border-radius:5px; color:white; }
+.btn-eliminar{ background:#b91d1d; padding:6px 10px; border-radius:5px; color:white; }
+
+/* MODALES */
+/* MODALES IGUAL QUE EN CLIENTES/FACTURAS */
+.modal {
+  display:none;
+  position:fixed;
+  z-index:10;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:rgba(0,0,0,0.45);
+  justify-content:center;
+  align-items:center;
+}
+
+/* Caja del modal */
+.modal-estilizado {
+  background:white;
+  border-radius:12px;
+  padding:25px;
+  width:420px;
+  max-width:90%;
+  box-shadow:0 5px 15px rgba(0,0,0,0.3);
+  animation: popIn .25s ease;
+  position:relative;
+}
+
+.modal-titulo {
+  text-align:center;
+  color:#0e2033;
+  margin-bottom:15px;
+  font-size:20px;
+  font-weight:700;
+}
+
+/* Inputs igual que clientes */
+.modal-estilizado label {
+  display:block;
+  font-weight:bold;
+  margin-top:12px;
+  color:#333;
+}
+
+.modal-estilizado input,
+.modal-estilizado select,
+.modal-estilizado textarea {
+  width:100%;
+  padding:10px;
+  border-radius:6px;
+  border:1px solid #ccc;
+  margin-top:4px;
+  font-size:15px;
+}
+
+.btn-azul {
+  background:#0e2033;
+  color:white;
+  border:none;
+  border-radius:6px;
+  padding:10px;
+  width:100%;
+  margin-top:15px;
+  cursor:pointer;
+}
+.btn-azul:hover { background:#16314d; }
+
+.btn-cancelar {
+  background:#ccc;
+  color:#222;
+  border:none;
+  border-radius:6px;
+  padding:10px;
+  width:100%;
+  margin-top:8px;
+  cursor:pointer;
+}
+.btn-cancelar:hover { background:#bbb; }
+
+/* Botón cerrar */
+.cerrar {
+  position:absolute;
+  right:15px;
+  top:10px;
+  font-size:22px;
+  color:#555;
+  cursor:pointer;
+}
+.cerrar:hover { color:#0e2033; }
+
+@keyframes popIn {
+  from { transform:scale(.95); opacity:0; }
+  to   { transform:scale(1); opacity:1; }
+}
+
+
+</style>
+
+{% endblock %}
+
+

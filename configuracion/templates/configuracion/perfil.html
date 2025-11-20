@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block title %}Configuración de Usuario{% endblock %}
+
+{% block content %}
+<style>
+    .config-container {
+        max-width: 650px;
+        margin: 40px auto;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        animation: fadeIn 0.6s ease-in-out;
+    }
+
+    .config-container h1 {
+        color: #0e2033;
+        font-size: 24px;
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .config-container label {
+        display: block;
+        font-weight: 600;
+        color: #0e2033;
+        margin-top: 15px;
+        margin-bottom: 5px;
+    }
+
+    .config-container input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .config-container input:focus {
+        border-color: #4a90e2;
+        box-shadow: 0 0 6px rgba(74, 144, 226, 0.4);
+        outline: none;
+    }
+
+    .config-container button {
+        width: 100%;
+        margin-top: 25px;
+        background-color: #0e2033;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 12px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .config-container button:hover {
+        background-color: #1c3b5a;
+    }
+
+    .message {
+        margin-top: 15px;
+        text-align: center;
+        font-size: 14px;
+    }
+
+    .message.success {
+        color: #28a745;
+    }
+
+    .message.error {
+        color: #dc3545;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<div class="config-container">
+    <h1>⚙️ Configuración de Usuario</h1>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <label for="nombre">Nombre de usuario:</label>
+        <input type="text" id="nombre" name="nombre" value="{{ request.user.username }}" placeholder="Tu nombre de usuario">
+
+        <label for="correo">Correo electrónico:</label>
+        <input type="email" id="correo" name="correo" value="{{ request.user.email }}" placeholder="ejemplo@correo.com">
+
+        <label for="password">Nueva contraseña:</label>
+        <input type="password" id="password" name="password" placeholder="••••••••">
+
+        <button type="submit">💾 Guardar cambios</button>
+
+        {% if messages %}
+        <div class="message">
+            {% for message in messages %}
+                <p class="{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </form>
+</div>
+{% endblock %}
+
+
+

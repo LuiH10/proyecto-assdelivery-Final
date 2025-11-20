@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+{% block title %}Gestión de Facturas{% endblock %}
+
+{% block content %}
+<h1>💰 Gestión de Facturas</h1>
+
+<!-- 🔘 Botón para abrir el modal -->
+<div style="display:flex; justify-content:flex-end; margin-bottom:15px;">
+  <button class="btn-crear" id="abrirModal">➕ Nueva Factura</button>
+</div>
+
+<!-- 📋 Tabla de facturas -->
+<div class="tabla-contenedor">
+<table class="tabla">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Cliente</th>
+      <th>Fecha</th>
+      <th>Total</th>
+      <th>Estado</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for factura in facturas %}
+    <tr>
+      <td>{{ factura.id }}</td>
+      <td class="col-cliente">{{ factura.cliente.nombre }}</td>
+      <td>{{ factura.fecha_emision }}</td>
+      <td>${{ factura.total }}</td>
+      <td>{{ factura.estado }}</td>
+      <td style="white-space:nowrap;">
+        <a href="#" class="btn-editar"
+           onclick="abrirEditarFactura({{ factura.id }}, '{{ factura.cliente.id }}', '{{ factura.total }}', '{{ factura.estado }}')">✏️</a>
+
+        <a href="{% url 'generar_pdf_factura' factura.id %}" class="btn-pdf">📄</a>
+
+        <a href="{% url 'eliminar_factura' factura.id %}" class="btn-eliminar"
+           onclick="return confirm('¿Seguro que deseas eliminar esta factura?')">🗑️</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6" style="text-align:center;">No hay facturas registradas.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<!-- MODAL CREAR FACTURA -->
+<div id="modalFactura" class="modal">
+  <div class="modal-contenido">
+    <span class="cerrar" id="cerrarModal">&times;</span>
+    <h2>➕ Registrar Nueva Factura</h2>
+
+    <form method="POST" action="{% url 'crear_factura' %}">
+      {% csrf_token %}
+      <label>Cliente:</label>
+      <select name="cliente" required>
+        {% for cliente in clientes %}
+        <option value="{{ cliente.id }}">{{ cliente.nombre }}</option>
+        {% endfor %}
+      </select>
+
+      <label>Total:</label>
+      <input type="number" step="0.01" name="total" required>
+
+      <label>Estado:</label>
+      <select name="estado">
+        <option value="pendiente">Pendiente</option>
+        <option value="pagada">Pagada</option>
+        <option value="vencida">Vencida</option>
+      </select>
+
+      <button type="submit" class="btn-azul">💾 Guardar Factura</button>
+      <button type="button" id="cancelarModal" class="btn-cancelar">✖ Cancelar</button>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL EDITAR FACTURA -->
+<div id="modalEditarFactura" class="modal">
+  <div class="modal-contenido">
+    <span class="cerrar" onclick="cerrarEditarFactura()">&times;</span>
+    <h2>✏️ Editar Factura</h2>
+
+    <form method="POST" id="formEditarFactura">
+      {% csrf_token %}
+
+      <label>Cliente:</label>
+      <select name="cliente" id="edit_cliente">
+        {% for c in clientes %}
+        <option value="{{ c.id }}">{{ c.nombre }}</option>
+        {% endfor %}
+      </select>
+
+      <label>Total:</label>
+      <input type="number" step="0.01" id="edit_total" name="total" required>
+
+      <label>Estado:</label>
+      <select name="estado" id="edit_estado">
+        <option value="pendiente">Pendiente</option>
+        <option value="pagada">Pagada</option>
+        <option value="vencida">Vencida</option>
+      </select>
+
+      <button type="submit" class="btn-azul">💾 Guardar Cambios</button>
+      <button type="button" class="btn-cancelar" onclick="cerrarEditarFactura()">✖ Cancelar</button>
+    </form>
+  </div>
+</div>
+
+<script>
+function abrirEditarFactura(id, cliente_id, total, estado) {
+  document.getElementById("edit_cliente").value = cliente_id;
+  document.getElementById("edit_total").value = total;
+  document.getElementById("edit_estado").value = estado;
+  document.getElementById("formEditarFactura").action = "/facturas/editar/" + id + "/";
+  document.getElementById("modalEditarFactura").style.display = "flex";
+}
+function cerrarEditarFactura() {
+  document.getElementById("modalEditarFactura").style.display = "none";
+}
+document.getElementById("abrirModal").onclick = () => document.getElementById("modalFactura").style.display = "flex";
+document.getElementById("cerrarModal").onclick = () => document.getElementById("modalFactura").style.display = "none";
+document.getElementById("cancelarModal").onclick = () => document.getElementById("modalFactura").style.display = "none";
+window.onclick = (e) => {
+  if (e.target === document.getElementById("modalFactura")) cerrarEditarFactura();
+  if (e.target === document.getElementById("modalEditarFactura")) cerrarEditarFactura();
+};
+</script>
+
+<style>
+
+  html {
+  scroll-behavior: auto !important;
+}
+
+body:focus-within {
+  scroll-behavior: auto !important;
+}
+
+h1 {
+  color: #0e2033;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+.tabla-contenedor {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  margin-top: 10px;
+}
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+}
+.tabla th {
+  background-color: #0e2033;
+  color: white;
+  padding: 12px 8px;
+  font-size: 14px;
+}
+.tabla td {
+  padding: 10px 8px;
+  border-bottom: 1px solid #ddd;
+  font-size: 14px;
+}
+.col-cliente {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.btn-crear {
+  background: #0e2033;
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+}
+.btn-crear:hover { background: #16314d; }
+.btn-editar {
+  background:#0078d7;
+  padding:6px 10px;
+  border-radius:5px;
+  color:white;
+  text-decoration:none;
+}
+.btn-editar:hover { background:#005fa3; }
+.btn-pdf {
+  background: #1a8f4c;
+  padding: 6px 10px;
+  border-radius: 5px;
+  color: white;
+  text-decoration: none;
+}
+.btn-pdf:hover { background: #166a3b; }
+.btn-eliminar {
+  background: #b91d1d;
+  padding: 6px 10px;
+  border-radius: 5px;
+  color: white;
+  text-decoration: none;
+}
+.btn-eliminar:hover { background: #8e1414; }
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 10;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.45);
+  justify-content: center;
+  align-items: center;
+}
+.modal-contenido {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  width: 420px;
+  max-width: 90%;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  text-align: left;
+  position: relative;
+}
+label {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
+  color: #333;
+}
+input, select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+.btn-azul {
+  background: #0e2033;
+  color: white;
+  padding: 10px;
+  width: 100%;
+  border-radius: 6px;
+  margin-top: 15px;
+}
+.btn-azul:hover { background: #16314d; }
+.btn-cancelar {
+  background: #ccc;
+  color: #222;
+  padding: 10px;
+  width: 100%;
+  border-radius: 6px;
+  margin-top: 8px;
+}
+.btn-cancelar:hover { background: #bbb; }
+.cerrar {
+  position: absolute;
+  top: 10px; right: 15px;
+  font-size: 22px;
+  cursor: pointer;
+  color: #555;
+}
+.cerrar:hover { color: #0e2033; }
+
+
+
+</style>
+{% endblock %}
