@@ -1,0 +1,93 @@
+h1 { color: #0e2033; font-weight: 700; margin-bottom: 20px; }
+
+.tabla-contenedor {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  margin-top: 10px;
+}
+
+.btn-crear {
+  background: #0e2033;
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s;
+}
+.btn-crear:hover { background: #16314d; }
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  background: #fff;
+}
+.tabla th { background-color: #0e2033; color: white; padding: 10px; }
+.tabla td { padding: 10px; border-bottom: 1px solid #ddd; }
+.tabla tr:hover { background: #f5f6f7; }
+
+.btn-pdf, .btn-excel, .btn-eliminar {
+  text-decoration: none; padding: 6px 10px; border-radius: 5px; color: white; font-size: 14px;
+}
+.btn-pdf { background: #1a8f4c; }
+.btn-excel { background: #0078d7; }
+.btn-eliminar { background: #b91d1d; }
+.btn-pdf:hover { background: #166a3b; }
+.btn-excel:hover { background: #005a9e; }
+.btn-eliminar:hover { background: #8e1414; }
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 10;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  justify-content: center;
+  align-items: center;
+}
+.modal-contenido {
+  background: #fff;
+  border-radius: 12px;
+  padding: 25px;
+  width: 420px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  text-align: left;
+  position: relative;
+}
+.cerrar {
+  position: absolute;
+  top: 10px; right: 15px;
+  font-size: 22px;
+  cursor: pointer;
+  color: #555;
+}
+.cerrar:hover { color: #0e2033; }
+
+.btn-azul {
+  background: #0e2033;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px;
+  margin-top: 15px;
+  width: 100%;
+  cursor: pointer;
+}
+.btn-azul:hover { background: #16314d; }
+
+.btn-cancelar {
+  background: #ccc;
+  color: #222;
+  border: none;
+  border-radius: 6px;
+  padding: 10px;
+  margin-top: 8px;
+  width: 100%;
+  cursor: pointer;
+}
+.btn-cancelar:hover { background: #bbb; }

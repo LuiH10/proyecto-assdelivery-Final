@@ -13,7 +13,7 @@
             display: flex;
         }
 
-        /* ─────────── SIDEBAR ─────────── */
+        /* SIDEBAR */
         .sidebar {
             width: 230px;
             height: 100vh;
@@ -30,8 +30,6 @@
         .logo {
             font-size: 26px;
             font-weight: 700;
-            letter-spacing: 1px;
-            text-align: left;
             margin-bottom: 40px;
         }
 
@@ -52,7 +50,6 @@
             background: #16314d;
         }
 
-        /* Botón de cerrar sesión */
         .logout-container {
             padding-top: 20px;
             border-top: 1px solid rgba(255,255,255,0.15);
@@ -75,13 +72,13 @@
             background: #8e2424;
         }
 
-        /* ─────────── CONTENIDO ─────────── */
+        /* CONTENIDO */
         .content {
             margin-left: 230px;
             width: calc(100% - 230px);
             padding: 30px;
-            box-sizing: border-box;
             min-height: 100vh;
+            box-sizing: border-box;
         }
     </style>
 
@@ -90,11 +87,8 @@
 
 <body>
 
-    <!-- ───────────────────────────────────────────── -->
-    <!--                 BARRA LATERAL                 -->
-    <!-- ───────────────────────────────────────────── -->
+    <!-- SIDEBAR -->
     <div class="sidebar">
-
         <div>
             <div class="logo">ASSDELIVERY</div>
 
@@ -111,13 +105,24 @@
         <div class="logout-container">
             <a href="/logout/" class="logout-btn">🚪 Cerrar sesión</a>
         </div>
-
     </div>
 
     <!-- CONTENIDO CENTRAL -->
     <div class="content">
+
+        {% include "partials/mensajes.html" %}
+
         {% block content %}{% endblock %}
+
     </div>
+
+</body>
+</html>
+
+
+
+
+
 
 </body>
 </html>

@@ -15,7 +15,7 @@ def lista_clientes(request):
         asignado = User.objects.filter(id=asignado_id).first() if asignado_id else None
 
         if Cliente.objects.filter(correo__iexact=correo).exists():
-            messages.error(request, "⚠️ Este correo ya está registrado en el sistema.")
+            messages.error(request, "Este correo ya está registrado.")
             return redirect('lista_clientes')
 
         Cliente.objects.create(
@@ -27,15 +27,17 @@ def lista_clientes(request):
             estado=estado
         )
 
-        messages.success(request, "✔️ Cliente registrado con éxito.")
+        messages.success(request, "Cliente registrado con éxito.")
         return redirect('lista_clientes')
 
     clientes = Cliente.objects.all().order_by('id')
     consultores = User.objects.all()
+
     return render(request, 'gestion_clientes/lista_clientes.html', {
         'clientes': clientes,
         'consultores': consultores
     })
+
 
 
 def eliminar_cliente(request, cliente_id):
@@ -53,6 +55,7 @@ def cambiar_estado_cliente(request, cliente_id):
             cliente.save()
     return redirect('lista_clientes')
 
+
 def editar_cliente(request, cliente_id):
     cliente = get_object_or_404(Cliente, id=cliente_id)
 
@@ -68,4 +71,7 @@ def editar_cliente(request, cliente_id):
 
         cliente.save()
         return redirect('lista_clientes')
+
+    return redirect('lista_clientes')
+
 

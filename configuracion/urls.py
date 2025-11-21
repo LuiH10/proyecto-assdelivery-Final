@@ -1,8 +1,13 @@
-# configuracion/urls.py
 from django.urls import path
-from . import views
+from .views import (
+    configuracion_usuario,
+    eliminar_consultor,
+    eliminar_consultor_directo
+)
 
 urlpatterns = [
-    path('', views.configuracion_usuario, name='configuracion_usuario'),
+    path('', configuracion_usuario, name='configuracion_usuario'),
+    path('eliminar_consultor/<int:user_id>/', eliminar_consultor, name='eliminar_consultor'),
+    path('eliminar-consultor-directo/', eliminar_consultor_directo, name='eliminar_consultor_directo'),
 ]
 

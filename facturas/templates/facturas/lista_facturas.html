@@ -34,7 +34,7 @@
         <a href="#" class="btn-editar"
            onclick="abrirEditarFactura({{ factura.id }}, '{{ factura.cliente.id }}', '{{ factura.total }}', '{{ factura.estado }}')">✏️</a>
 
-        <a href="{% url 'generar_pdf_factura' factura.id %}" class="btn-pdf">📄</a>
+        <a href="{% url 'factura_pdf' factura.id %}" class="btn-pdf">📄 Descargar PDF</a>
 
         <a href="{% url 'eliminar_factura' factura.id %}" class="btn-eliminar"
            onclick="return confirm('¿Seguro que deseas eliminar esta factura?')">🗑️</a>

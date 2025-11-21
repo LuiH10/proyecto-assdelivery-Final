@@ -45,18 +45,36 @@ def eliminar_factura(request, factura_id):
 
 
 
-def generar_pdf_factura(request, factura_id):
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from weasyprint import HTML
+from io import BytesIO
+from django.shortcuts import get_object_or_404
+from .models import Factura
+
+
+def factura_pdf(request, factura_id):
     factura = get_object_or_404(Factura, id=factura_id)
-    html_string = render_to_string('facturas/factura_pdf.html', {'factura': factura})
 
-    # Generar el PDF directamente en memoria (sin usar archivos temporales)
-    pdf_file = BytesIO()
-    HTML(string=html_string).write_pdf(pdf_file)
-    pdf_file.seek(0)
+    html_string = render_to_string("facturas/factura_pdf.html", {
+        "factura": factura
+    })
 
-    response = HttpResponse(pdf_file.read(), content_type='application/pdf')
-    response['Content-Disposition'] = f'inline; filename=factura_{factura.id}.pdf'
+    html = HTML(string=html_string)
+
+    pdf_bytes = BytesIO()
+    html.write_pdf(target=pdf_bytes)
+
+    pdf_bytes.seek(0)
+    response = HttpResponse(pdf_bytes.read(), content_type="application/pdf")
+    response["Content-Disposition"] = f'attachment; filename="factura_{factura.id}.pdf"'
+
     return response
+
+
+
+
+
 
 from django.contrib import messages  # IMPORTANTE
 from django.shortcuts import render, redirect, get_object_or_404

@@ -2,111 +2,118 @@
 {% block title %}Configuración de Usuario{% endblock %}
 
 {% block content %}
+
 <style>
-    .config-container {
-        max-width: 650px;
-        margin: 40px auto;
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 15px;
-        padding: 30px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-        animation: fadeIn 0.6s ease-in-out;
-    }
+.config-container {
+    max-width: 650px;
+    margin: 40px auto;
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
 
-    .config-container h1 {
-        color: #0e2033;
-        font-size: 24px;
-        text-align: center;
-        margin-bottom: 25px;
-    }
+h1 {
+    text-align: center;
+    color: #0e2033;
+}
 
-    .config-container label {
-        display: block;
-        font-weight: 600;
-        color: #0e2033;
-        margin-top: 15px;
-        margin-bottom: 5px;
-    }
+.btn-accion {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
 
-    .config-container input {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        font-size: 15px;
-        transition: all 0.3s ease;
-    }
+.btn-guardar { background:#0e2033; color:white; }
+.btn-eliminar { background:#a30000; color:white; margin-top:10px; }
 
-    .config-container input:focus {
-        border-color: #4a90e2;
-        box-shadow: 0 0 6px rgba(74, 144, 226, 0.4);
-        outline: none;
-    }
+.modal {
+    display:none;
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.55);
+    justify-content:center;
+    align-items:center;
+}
 
-    .config-container button {
-        width: 100%;
-        margin-top: 25px;
-        background-color: #0e2033;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 12px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background 0.3s;
-    }
+.modal-contenido {
+    background:white;
+    padding:22px;
+    width:420px;
+    border-radius:10px;
+    text-align:center;
+    box-shadow:0 5px 20px rgba(0,0,0,0.3);
+}
 
-    .config-container button:hover {
-        background-color: #1c3b5a;
-    }
+.campo {
+    width:100%;
+    padding:10px;
+    margin-bottom:12px;
+    border:1px solid #bbb;
+    border-radius:6px;
+}
 
-    .message {
-        margin-top: 15px;
-        text-align: center;
-        font-size: 14px;
-    }
-
-    .message.success {
-        color: #28a745;
-    }
-
-    .message.error {
-        color: #dc3545;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+.btn-confirmar { background:#a30000; color:white; }
+.btn-cerrar { background:#333; color:white; margin-top:8px; }
 </style>
 
 <div class="config-container">
+
     <h1>⚙️ Configuración de Usuario</h1>
-    
+
     <form method="POST">
         {% csrf_token %}
-        <label for="nombre">Nombre de usuario:</label>
-        <input type="text" id="nombre" name="nombre" value="{{ request.user.username }}" placeholder="Tu nombre de usuario">
 
-        <label for="correo">Correo electrónico:</label>
-        <input type="email" id="correo" name="correo" value="{{ request.user.email }}" placeholder="ejemplo@correo.com">
+        <label>Nombre de usuario:</label>
+        <input type="text" name="nombre" class="campo" value="{{ request.user.username }}">
 
-        <label for="password">Nueva contraseña:</label>
-        <input type="password" id="password" name="password" placeholder="••••••••">
+        <label>Correo electrónico:</label>
+        <input type="email" name="correo" class="campo" value="{{ request.user.email }}">
 
-        <button type="submit">💾 Guardar cambios</button>
+        <label>Nueva contraseña:</label>
+        <input type="password" name="password" class="campo">
 
-        {% if messages %}
-        <div class="message">
-            {% for message in messages %}
-                <p class="{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</p>
-            {% endfor %}
-        </div>
-        {% endif %}
+        <button class="btn-accion btn-guardar">💾 Guardar cambios</button>
     </form>
+
+    <button class="btn-accion btn-eliminar" onclick="abrirModal()">
+        🗑️ Eliminar consultor
+    </button>
+
 </div>
+
+
+<!-- MODAL -->
+<div id="modalEliminar" class="modal">
+    <div class="modal-contenido">
+        <h3>Eliminar consultor</h3>
+
+        <form method="POST" action="{% url 'eliminar_consultor_directo' %}">
+            {% csrf_token %}
+
+            <label>Correo del consultor:</label>
+            <input type="email" name="correo_consultor" class="campo" placeholder="correo@ejemplo.com" required>
+
+            <button type="submit" class="btn-accion btn-confirmar">Eliminar</button>
+        </form>
+
+        <button class="btn-accion btn-cerrar" onclick="cerrarModal()">Cerrar</button>
+    </div>
+</div>
+
+
+<script>
+function abrirModal() {
+    document.getElementById("modalEliminar").style.display = "flex";
+}
+function cerrarModal() {
+    document.getElementById("modalEliminar").style.display = "none";
+}
+</script>
+
 {% endblock %}
-
-
-

@@ -1,8 +1,12 @@
-// {% extends 'base.html' %}
+{% extends 'base.html' %}
 {% block title %}Gestión de Clientes{% endblock %}
 
 {% block content %}
+
+{% include "partials/mensajes.html" %}
+
 <h1>👥 Gestión de Clientes</h1>
+
 
 <!-- 🔍 Buscador -->
 <div style="display:flex; gap:10px; align-items:center; margin-bottom:15px;">
@@ -10,16 +14,6 @@
          style="padding:8px; border-radius:6px; border:1px solid #ccc; flex:1;">
   <button class="btn-crear" id="abrirModal">➕ Añadir Cliente</button>
 </div>
-
-{% if messages %}
-  <div style="margin-top:10px;">
-    {% for message in messages %}
-      <p style="color:{% if message.tags == 'error' %}#b91d1d{% else %}#0e8f2f{% endif %}; font-weight:600;">
-        {{ message }}
-      </p>
-    {% endfor %}
-  </div>
-{% endif %}
 
 <!-- 📋 Tabla -->
 <div class="tabla-contenedor">
